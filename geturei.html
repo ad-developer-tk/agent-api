@@ -8,21 +8,32 @@
 </head>
 
 <body>
+    <h1 id="date">日付：</h1>
     <h1 id="geturei">月齢：</h1>
     <script>
-        function calcGeturei() {
-            var element = document.getElementById("geturei");
+        function formatDate(date, sep = "") {
+            const yyyy = date.getFullYear();
+            const mm = ('00' + (date.getMonth() + 1)).slice(-2);
+            const dd = ('00' + date.getDate()).slice(-2);
 
-            const date = new Date(Date.now() + ((new Date().getTimezoneOffset() + (540)) * 60 * 1000));
+            return `${yyyy}${sep}${mm}${sep}${dd}`;
+        }
+        function calcGeturei() {
+            var dateElement = document.getElementById("date");
+            var getureiElement = document.getElementById("geturei");
+
+            // https://tsukurue.com/archives/549
+            const date = new Date(Date.now() + ((new Date().getTimezoneOffset() + (540)) * 60 * 1000)); // 日本時間で取得
             if (isNaN(date.getTime())) return;
             date.setHours(12);
+            dateElement.innerText += formatDate(date, "/");
 
             // https://qiita.com/akebi_mh/items/b6a9c056d9198552e7b4
             var day = date.getTime() / 864e5 - 6.475,
                 r = 29.530588853 + 2.162e-9 * ((date.getTime() - 946727935816) / 315576e5), // 平均朔望月
                 age = day > 0 ? day % r : (r + day % r) % r;
             console.log(day, r, age);
-            element.innerText += age;
+            getureiElement.innerText += age;
 
             /*
             新月（しんげつ）：月は太陽といっしょに朝のぼってきて、夕方にしずむ。
@@ -32,13 +43,13 @@
             */
             var geturei = Math.round(age);
             if (geturei == 29 || geturei == 0) {
-                element.innerText += "（新月）";
+                getureiElement.innerText += "（新月）";
             } else if (geturei == 7 || geturei == 8) {
-                element.innerText += "（上弦）";
+                getureiElement.innerText += "（上弦）";
             } else if (geturei == 14 || geturei == 15) {
-                element.innerText += "（満月）";
+                getureiElement.innerText += "（満月）";
             } else if (age == 21 || age == 22) {
-                element.innerText += "（下弦）";
+                getureiElement.innerText += "（下弦）";
             }
         }
         calcGeturei();
